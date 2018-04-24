@@ -1,9 +1,53 @@
-body {
-	padding-top: 54px;
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-@media (min-width: 992px) {
-	body {
-		padding-top: 56px;
-	}
+#wrapper {
+    position: absolute;
+    top: 56px;
+    width: 250px;
+    margin: auto;
+    margin-left: -250px;
+    transition: all 0.3s;
+    padding: 0;
+    height: calc(100% - 56px);
+}
+
+#wrapper.active {
+    margin-left: 0;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    height: 100%;
+    background: #343a40;
+    color: #fff;
+    overflow: auto;
+}
+
+.sidebar-header h3 {
+    padding-left: 16px;
+    font-size: 1.0em;
+}
+
+#sidebar div {
+/*    border: solid black 1px;*/
+}
+
+#map {
+    position: absolute;
+    top: 56px;
+    left: 250px;
+    height: calc(100% - 56px);
+    width: calc(100% - 250px);
+    transition: all 0.3s;
+}
+
+#map.active {
+    left: 0px;
+    width: 100%;
 }
