@@ -5,28 +5,21 @@ html, body {
     padding: 0;
 }
 
-#wrapper {
-    position: absolute;
-    top: 56px;
-    width: 250px;
-    margin: auto;
-    margin-left: -250px;
-    transition: all 0.3s;
-    padding: 0;
-    height: calc(100% - 56px);
-}
-
-#wrapper.active {
-    margin-left: 0;
-}
-
 #sidebar {
+    position: absolute;
     min-width: 250px;
     max-width: 250px;
-    height: 100%;
+    top: 56px;
+    height: calc(100% - 56px);
     background: #343a40;
     color: #fff;
     overflow: auto;
+    transition: all 0.3s;
+    margin-left: -250px;
+}
+
+#sidebar.active {
+    margin-left: 0;
 }
 
 .sidebar-header h3 {
@@ -50,4 +43,8 @@ html, body {
 #map.active {
     left: 0px;
     width: 100%;
+}
+
+.filter {
+    padding: 8px;
 }
