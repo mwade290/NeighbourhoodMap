@@ -48,3 +48,7 @@ html, body {
 .filter {
     padding: 8px;
 }
+
+#locations-list {
+    list-style: none;
+}

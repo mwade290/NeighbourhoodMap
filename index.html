@@ -28,21 +28,29 @@
         </div>
         
         <div class="filter">
-            <input class="form-control" type="text" placeholder="Filter...">
+            <!-- Put data binding in here-->
+            <input id="filter-box" class="form-control" type="text" placeholder="Filter...">
+        </div>
+        
+        <div class="locations">
+            <!-- Put data binding in here-->
+            <ul id="locations-list" data-bind="foreach: locations">
+                <li id="location" data-bind="text: title"></li>
+            </ul>
         </div>
 
     </nav>
     
-    <div id="map"></div>
-  
-    <script async defer 
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCklJwXSfmlSujXE2wPA0JEdjOr2x8iPSE&v=3&callback=initMap">
-    </script>
+    <div id="map">Error loading maps. Try refreshing the page.</div>
     
 	<script src="js/libs/jquery.min.js"></script>
 	<script src="js/libs/bootstrap.bundle.min.js"></script>
 	<script src="js/libs/knockout.js"></script>
 	<script src="js/site.js"></script>
+	
+    <script async defer 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCklJwXSfmlSujXE2wPA0JEdjOr2x8iPSE&v=3&callback=initMap">
+    </script>
 
 </body>
 </html>
