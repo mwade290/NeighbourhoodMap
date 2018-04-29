@@ -22,15 +22,6 @@ html, body {
     margin-left: 0;
 }
 
-.sidebar-header h3 {
-    padding-left: 16px;
-    font-size: 1.0em;
-}
-
-#sidebar div {
-/*    border: solid black 1px;*/
-}
-
 #map {
     position: absolute;
     top: 56px;
@@ -51,4 +42,13 @@ html, body {
 
 #locations-list {
     list-style: none;
+    padding-left: 8px;
+}
+
+.marker {
+    text-align: center;
+}
+
+.markerTitle {
+    font-weight: 700;
 }

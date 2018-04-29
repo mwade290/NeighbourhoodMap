@@ -22,19 +22,15 @@
     </nav>
        
     <nav id="sidebar" class="active">
-
-        <div class="sidebar-header">
-            <h3>Filter Options</h3>
-        </div>
         
         <div class="filter">
             <!-- Put data binding in here-->
-            <input id="filter-box" class="form-control" type="text" placeholder="Filter...">
+            <input id="filter-box" class="form-control" type="text" placeholder="Filter..." 
+            data-bind="textInput: filterInput, valueUpdate: 'afterkeyup'">
         </div>
         
         <div class="locations">
-            <!-- Put data binding in here-->
-            <ul id="locations-list" data-bind="foreach: locations">
+            <ul id="locations-list" data-bind="foreach: filteredLocations">
                 <li id="location" data-bind="text: title"></li>
             </ul>
         </div>

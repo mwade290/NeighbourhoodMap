@@ -11,69 +11,90 @@ var defaultLocations = [
 ];
 
 var map;
+var fourSquareClientID = 'NSBLVQNWYH4BDXJVWJ2MSVK5PBBGASYVH4ZIYEBWULSG14MI';
+var fourSquareClientSecret = 'WKQOSQDLDMZUUPSL45NTQ2P3XSYRDHB1XNDN1YMSQ52GRJNS';
 
-//function initMap() {
-//    
-//    map = new google.maps.Map(document.getElementById('map'), {
-//        center: {lat: 41.898824, lng: 12.476775},
-//        zoom: 14
-//    });
-//
-//    var markers = [];
-//    var position;
-//    var title;
-//    var marker;
-//    var largeInfowindow = new google.maps.InfoWindow();
-//    var bounds = new google.maps.LatLngBounds();
-//
-//    for (var i = 0; i < locations.length; i++) {
-//        position = locations[i].location;
-//        title = locations[i].title;
-//        marker = new google.maps.Marker({
-//            map: map,
-//            position: position,
-//            title: title,
-//            animation: google.maps.Animation.DROP,
-//            id: i
-//        });
-//        markers.push(marker);
-//        bounds.extend(marker.position);
-//        marker.addListener('click', function() {
-//            populateInfoWindow(this, largeInfowindow)
-//        });
-//        map.fitBounds(bounds);
-//    }
-//    
-//};
+function reformatUndefined(input) {
+  return input != null ? input : '';
+}
 
-function populateInfoWindow(marker, infowindow) {
+function getFourSquareContent(item) {
     
-    if (infowindow.marker != marker) {
-      infowindow.marker = marker;
-      infowindow.setContent('<div>' + marker.title + '</div>');
-      infowindow.open(map, marker);
-
-      infowindow.addListener('closeclick', function() {
-        infowindow.marker = null;
-      });
-    }
+    var URL = '';
+    var street = '';
+	var city = '';
+    var content = '';
     
+    var fourSquareURL = 'https://api.foursquare.com/v2/venues/search?ll=';
+    fourSquareURL += item.location.lat;
+    fourSquareURL += ',';
+    fourSquareURL += item.location.lng;
+    fourSquareURL += '&client_id=';
+    fourSquareURL += this.fourSquareClientID;
+    fourSquareURL += '&client_secret=';
+    fourSquareURL += this.fourSquareClientSecret;
+    fourSquareURL += '&v=20180428&query=';
+    fourSquareURL += item.title;
+    
+    $.ajax({
+        async: false,
+        url: fourSquareURL,
+        dataType: 'JSON',
+        success: function(data) {
+            var result = data.response.venues[0];
+            URL = reformatUndefined(result.URL);
+            street = reformatUndefined(result.location.formattedAddress[0]);
+            city = reformatUndefined(result.location.formattedAddress[1]);
+            content = '<div class="marker markerTitle">'
+            content += item.title;
+            content += '</div><div class="marker">';
+            content += URL;
+            content += '</div><div class="marker">';
+            content += street;
+            content += '</div><div class="marker">';
+            content += city;
+            content += '</div>';
+            return content;
+        },
+        error: function() {
+            alert("Error loading FourSquare API. Try refreshing the page.");
+        }
+    });
+    
+    return content;
 }
 
 function siteViewModel() {
     
     var self = this;
     this.locations = ko.observableArray();
-    this.filter = ko.observable('');
-    
-    defaultLocations.forEach(function(item) {
-        self.locations.push(new Location(item));
-    });
+    this.filterInput = ko.observable('');
     
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 41.898824, lng: 12.476775},
         zoom: 14
     });
+
+	defaultLocations.forEach(function(item){
+		self.locations.push(new Location(item));
+	});
+
+	this.filteredLocations = ko.computed( function() {
+		var filter = self.filterInput().toLowerCase();
+		if (filter) {
+			return ko.utils.arrayFilter(self.locations(), function(item) {
+				var title = item.title.toLowerCase();
+				var result = title.search(filter) >= 0;
+				item.visible(result);
+				return result;
+			});
+		} else {
+            self.locations().forEach(function(item){
+				item.visible(true);
+			});
+			return self.locations();
+		}
+	}, self);
     
 }
 
@@ -83,6 +104,33 @@ var Location = function(item) {
     this.title = item.title;
     this.lat = item.location.lat;
     this.lng = item.location.lng;
+    this.visible = ko.observable(true);
+    this.content = getFourSquareContent(item);
+    
+    this.infoWindow = new google.maps.InfoWindow();
+
+	this.marker = new google.maps.Marker({
+			position: new google.maps.LatLng(this.lat, this.lng),
+			map: map,
+			title: this.title,
+            animation: google.maps.Animation.DROP
+	});
+    
+    this.marker.setMap(map);
+    
+    this.marker.addListener('click', function() {
+        self.infoWindow.setContent('<div>' + self.content + '</div>');
+        self.infoWindow.open(map, this);
+    });
+    
+    this.showMarker = ko.computed(function() {
+		if(self.visible() === true) {
+			this.marker.setMap(map);
+		} else {
+			self.marker.setMap(null);
+		}
+		return true;
+	}, this);
     
 };
 
