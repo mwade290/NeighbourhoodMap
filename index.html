@@ -21,7 +21,7 @@
 
     </nav>
        
-    <nav id="sidebar" class="active">
+    <nav id="sidebar">
         
         <div class="filter">
             <!-- Put data binding in here-->
@@ -31,7 +31,7 @@
         
         <div class="locations">
             <ul id="locations-list" data-bind="foreach: filteredLocations">
-                <li id="location" data-bind="text: title"></li>
+                <li id="location" data-bind="text: title, click: highlight"></li>
             </ul>
         </div>
 
