@@ -27,6 +27,11 @@ $(document).ready(function () {
     
 });
 
+function googleError() {
+    alert("Could not connect to the Google Maps API.");
+    $('#map').html('Error loading maps. Try refreshing the page.');
+}
+
 // Starting point for JS
 function initMap() {
     ko.applyBindings(new siteViewModel());
@@ -35,8 +40,8 @@ function initMap() {
 function siteViewModel() {
     
     var self = this;
-    this.locations = ko.observableArray();
-    this.filterInput = ko.observable('');
+    self.locations = ko.observableArray();
+    self.filterInput = ko.observable('');
     
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 41.898824, lng: 12.476775},
@@ -47,7 +52,7 @@ function siteViewModel() {
 		self.locations.push(new Location(item));
 	});
 
-	this.filteredLocations = ko.computed( function() {
+	self.filteredLocations = ko.computed( function() {
 		var filter = self.filterInput().toLowerCase();
 		if (filter) {
 			return ko.utils.arrayFilter(self.locations(), function(item) {
@@ -88,8 +93,6 @@ var Location = function(item) {
         
 	});
     
-    this.marker.setMap(map);
-    
     // Handle the click event of a marker
     this.marker.addListener('click', function() {
         
@@ -115,11 +118,7 @@ var Location = function(item) {
     
     this.showMarker = ko.computed(function() {
         
-		if (self.visible() === true) {
-			self.marker.setMap(map);
-		} else {
-			self.marker.setMap(null);
-		}
+        self.marker.setVisible(self.visible());
 		return true;
         
 	}, this);
@@ -163,12 +162,13 @@ function getFourSquareContent(item) {
     $.ajax({
         async: false,
         url: fourSquareURL,
-        dataType: 'JSON',
-        success: function(data) {
+        dataType: 'JSON'
+    })
+        .done(function(data) {
             var result = data.response.venues[0];
-            URL = reformatUndefined(result.URL);
-            street = reformatUndefined(result.location.formattedAddress[0]);
-            city = reformatUndefined(result.location.formattedAddress[1]);
+            URL = result.URL || '';
+            street = result.location.formattedAddress[0] || '';
+            city = result.location.formattedAddress[1] || '';
             content = '<div class="marker markerTitle"><a href="'
             content += item.url;
             content += '" target="_blank">';
@@ -187,16 +187,10 @@ function getFourSquareContent(item) {
             content += '</div>';
 
             return content;
-        },
-        error: function() {
+        })
+        .fail(function() {
             alert("Error loading FourSquare API. Try refreshing the page.");
-        }
-    });
+        });
 
     return content;
-}
-
-// Converts any null values to empty strings
-function reformatUndefined(input) {
-  return input != null ? input : '';
 }
